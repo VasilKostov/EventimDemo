@@ -4,7 +4,7 @@ import java.util.List;
 import models.Concerts;
 import models.dtos.ConcertDTO;
 
-public interface IConcertService {
+public interface IConcertRepository {
     List<ConcertDTO> getAllConcerts();
     ConcertDTO getConcertById(int id);
 

@@ -1,7 +1,8 @@
-package services;
+package repositories;
 
 import db.DatabaseConnection;
-import interfaces.IHallService;
+import exceptions.RepositoryException;
+import interfaces.IHallRepository;
 import models.Halls;
 import models.dtos.HallDTO;
 
@@ -9,7 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HallService implements IHallService {
+public class HallRepository implements IHallRepository {
     @Override
     public int insertHall(String name) {
         String sql = "INSERT INTO halls(name) VALUES (?) RETURNING id";
@@ -24,7 +25,7 @@ public class HallService implements IHallService {
                 return id;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RepositoryException("Failed to insert hall: " + name, e);
         }
         return -1;
     }
@@ -49,7 +50,7 @@ public class HallService implements IHallService {
             stmt.executeBatch();
             System.out.println("Inserted all seats for hall ID " + hallId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RepositoryException("Failed to insert seats", e);
         }
     }
 
@@ -79,7 +80,7 @@ public class HallService implements IHallService {
                 halls.add(hall);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RepositoryException("Failed show all halls", e);
         }
         return halls;
     }
@@ -99,7 +100,7 @@ public class HallService implements IHallService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RepositoryException("Failed show hall", e);
         }
         return null;
     }
@@ -133,7 +134,7 @@ public class HallService implements IHallService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RepositoryException("Failed to get avalable halls", e);
         }
 
         return availableHalls;

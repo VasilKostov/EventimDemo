@@ -1,8 +1,8 @@
-package services;
+package repositories;
 
 import db.DatabaseConnection;
-import interfaces.IOrderService;
-import models.dtos.ConcertDTO;
+import exceptions.RepositoryException;
+import interfaces.IOrderRepository;
 import models.dtos.SeatDTO;
 
 import java.sql.Connection;
@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderService implements IOrderService {
+public class OrderRepository implements IOrderRepository {
 
     @Override
     public List<SeatDTO> getAvailableSeats(int concertId) {
@@ -45,7 +45,7 @@ public class OrderService implements IOrderService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RepositoryException("Failed to get all avalabale seats", e);
         }
 
         return seats;
@@ -70,8 +70,7 @@ public class OrderService implements IOrderService {
             return rows > 0;
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            throw new RepositoryException("Failed to reserve a seat", e);
         }
     }
 }

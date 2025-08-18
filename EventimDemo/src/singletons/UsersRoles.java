@@ -1,4 +1,4 @@
-package Singletons;
+package singletons;
 
 public enum UsersRoles {
     Client,

@@ -1,7 +1,8 @@
-package services;
+package repositories;
 
-import interfaces.IConcertService;
-import interfaces.IHallService;
+import exceptions.RepositoryException;
+import interfaces.IConcertRepository;
+import interfaces.IHallRepository;
 import models.Concerts;
 import db.DatabaseConnection;
 import models.Halls;
@@ -11,9 +12,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConcertService implements IConcertService {
+public class ConcertRepository implements IConcertRepository {
 
-    private IHallService hallService = new HallService();
+    private IHallRepository hallService = new HallRepository();
 
     @Override
     public List<ConcertDTO> getAllConcerts() {
@@ -39,7 +40,7 @@ public class ConcertService implements IConcertService {
                 result.add(dto);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RepositoryException("Failed show all concerts", e);
         }
 
         return result;
@@ -70,7 +71,7 @@ public class ConcertService implements IConcertService {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RepositoryException("Failed to get concert by id", e);
         }
         return concert;
     }
@@ -90,9 +91,8 @@ public class ConcertService implements IConcertService {
             return rows > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RepositoryException("Failed to create a concert: " + concert.Name, e);
         }
-        return false;
     }
 
     @Override
@@ -111,9 +111,8 @@ public class ConcertService implements IConcertService {
             return rows > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RepositoryException("Failed to update concert: " + concert.Name, e);
         }
-        return false;
     }
 
     @Override
@@ -127,8 +126,7 @@ public class ConcertService implements IConcertService {
             return rows > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RepositoryException("Failed to delete concert", e);
         }
-        return false;
     }
 }

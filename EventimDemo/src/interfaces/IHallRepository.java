@@ -6,7 +6,7 @@ import models.dtos.HallDTO;
 import java.sql.Date;
 import java.util.List;
 
-public interface IHallService {
+public interface IHallRepository {
     int insertHall(String name);
     void insertSeats(int hallId, int[] seatsPerRow);
     void importHallWithSeats(String name, int[] seatsPerRow);
