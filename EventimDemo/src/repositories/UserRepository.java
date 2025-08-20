@@ -1,139 +1,143 @@
 package repositories;
 
+import db.DatabaseConnection;
 import exceptions.RepositoryException;
 import singletons.UsersRoles;
-import db.DatabaseConnection;
-import interfaces.IUserRepository;
 
 import java.sql.*;
 
-public class UserRepository implements IUserRepository {
+public class UserRepository {
 
-    @Override
-    public boolean createUser(String name, String password) {
-        return createUser(name, password, UsersRoles.Client);
-    }
+    // SQL constants
+    private static final String INSERT_USER_QUERY = "INSERT INTO Users (Name, Password, CreatedAt) VALUES (?, ?, CURRENT_DATE) RETURNING Id";
+    private static final String GET_ROLE_ID_QUERY = "SELECT Id FROM Roles WHERE Name = ?";
+    private static final String INSERT_USER_ROLE_QUERY = "INSERT INTO UsersToRoles (UserId, RoleId) VALUES (?, ?)";
+    private static final String VALIDATE_USER_QUERY = "SELECT id FROM Users WHERE name = ? AND password = ?";
+    private static final String GET_USER_ID_QUERY = "SELECT Id FROM Users WHERE Name = ?";
+    private static final String GET_USER_ROLE_QUERY = """
+            SELECT r.name 
+            FROM Users u
+            JOIN UsersToRoles ur ON u.id = ur.userId
+            JOIN Roles r ON ur.roleId = r.id
+            WHERE u.name = ?
+            """;
+    private static final String IMPORT_ROLE_QUERY = "INSERT INTO Roles (Name) VALUES (?) ON CONFLICT (Name) DO NOTHING";
 
-    @Override
-    public boolean createUser(String name, String password, UsersRoles role) {
-        String insertUserSql = "INSERT INTO Users (Name, Password, CreatedAt) VALUES (?, ?, CURRENT_DATE) RETURNING Id";
-        String insertUserRoleSql = "INSERT INTO UsersToRoles (UserId, RoleId) VALUES (?, ?)";
-        String getRoleIdSql = "SELECT Id FROM Roles WHERE Name = ?";
+    // Exception message constants
+    private static final String INSERT_USER_EXCEPTION = "Failed to insert user";
+    private static final String GET_ROLE_ID_EXCEPTION = "Failed to get role ID";
+    private static final String ASSIGN_ROLE_EXCEPTION = "Failed to assign role to user";
+    private static final String IMPORT_ROLE_EXCEPTION = "Failed to import role";
+    private static final String VALIDATE_USER_EXCEPTION = "Failed to validate user";
+    private static final String GET_USER_ID_EXCEPTION = "Failed to get user ID";
+    private static final String GET_USER_ROLE_EXCEPTION = "Failed to get user role";
 
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            connection.setAutoCommit(false);
+    public int insertUser(String name, String password) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(INSERT_USER_QUERY)) {
 
-            int userId;
-            PreparedStatement ps = connection.prepareStatement(insertUserSql);
             ps.setString(1, name);
             ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
+
             if (rs.next()) {
-                userId = rs.getInt(1);
-            } else {
-                throw new SQLException("Failed to insert user");
+                return rs.getInt(1);
             }
 
-
-            int roleId;
-            PreparedStatement ps2 = connection.prepareStatement(getRoleIdSql);
-            ps2.setString(1, role.name());
-            ResultSet rs2 = ps2.executeQuery();
-            if (rs2.next()) {
-                roleId = rs2.getInt("Id");
-            } else {
-                throw new SQLException("Failed show all concerts");
-            }
-
-            PreparedStatement ps3 = connection.prepareStatement(insertUserRoleSql);
-            ps3.setInt(1, userId);
-            ps3.setInt(2, roleId);
-            ps3.executeUpdate();
-
-            connection.commit();
-            System.out.println("User '" + name + "' created with role '" + role.name() + "' (UserId=" + userId + ")");
-            return true;
+            throw new SQLException("Failed to insert user");
 
         } catch (SQLException e) {
-            throw new RepositoryException("Failed to create new user", e);
+            throw new RepositoryException(INSERT_USER_EXCEPTION, e);
         }
     }
 
-    @Override
-    public void importRoles() {
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            String[] defaultRoles = {"Client", "Admin"};
-
-            for (String roleName : defaultRoles) {
-                PreparedStatement ps = connection.prepareStatement("INSERT INTO Roles (Name) VALUES (?) ON CONFLICT (Name) DO NOTHING");
-                ps.setString(1, roleName);
-                ps.executeUpdate();
-            }
-
-            System.out.println("Roles imported");
-        } catch (SQLException e) {
-            throw new RepositoryException("Failed to import default roles", e);
-        }
-    }
-
-    @Override
-    public boolean validateUser(String name, String password) {
-        String sql = "SELECT id FROM users WHERE name = ? AND password = ?";
+    public int getRoleId(UsersRoles role) {
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, name);
-            stmt.setString(2, password);
-            ResultSet rs = stmt.executeQuery();
-            return rs.next();
+             PreparedStatement ps = conn.prepareStatement(GET_ROLE_ID_QUERY)) {
+
+            ps.setString(1, role.name());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+            throw new SQLException("Role not found: " + role.name());
+
         } catch (SQLException e) {
-            throw new RepositoryException("Failed to validate user", e);
+            throw new RepositoryException(GET_ROLE_ID_EXCEPTION, e);
         }
     }
 
-    @Override
-    public int getUserIdByUsername(String username) {
-        String sql = "SELECT Id FROM Users WHERE Name = ?";
+    public boolean assignRoleToUser(int userId, int roleId) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(INSERT_USER_ROLE_QUERY)) {
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, roleId);
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RepositoryException(ASSIGN_ROLE_EXCEPTION, e);
+        }
+    }
+
+    public void importRole(String roleName) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(IMPORT_ROLE_QUERY)) {
+
+            ps.setString(1, roleName);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RepositoryException(IMPORT_ROLE_EXCEPTION + ": " + roleName, e);
+        }
+    }
+
+    public boolean validateUser(String name, String password) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(VALIDATE_USER_QUERY)) {
+
+            ps.setString(1, name);
+            ps.setString(2, password);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+
+        } catch (SQLException e) {
+            throw new RepositoryException(VALIDATE_USER_EXCEPTION, e);
+        }
+    }
+
+    public int getUserId(String username) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(GET_USER_ID_QUERY)) {
 
             ps.setString(1, username);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("Id");
-                }
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
             }
+
+            return -1;
 
         } catch (SQLException e) {
-            throw new RepositoryException("Failed to get userId by username", e);
+            throw new RepositoryException(GET_USER_ID_EXCEPTION, e);
         }
-
-        return -1;
     }
 
-    @Override
     public UsersRoles getUserRole(String username) {
-        String sql = """
-            
-                SELECT r.name 
-            FROM users u 
-            JOIN usersToRoles ur ON u.id = ur.userId 
-            JOIN roles r ON ur.roleId = r.id 
-            WHERE u.name = ?
-            """;
         try (Connection conn = DatabaseConnection.getConnection();
-             var stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, username);
-            var rs = stmt.executeQuery();
-            if (rs.next()) {
-                String roleName = rs.getString("name");
-                return UsersRoles.valueOf(roleName);
-            }
-        } catch (Exception e) {
-            throw new RepositoryException("Failed to get user's role", e);
-        }
+             PreparedStatement ps = conn.prepareStatement(GET_USER_ROLE_QUERY)) {
 
-        return UsersRoles.Client;
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return UsersRoles.valueOf(rs.getString("name"));
+            }
+
+            return UsersRoles.Client;
+
+        } catch (SQLException e) {
+            throw new RepositoryException(GET_USER_ROLE_EXCEPTION, e);
+        }
     }
 }

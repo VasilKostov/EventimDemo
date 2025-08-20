@@ -1,33 +1,25 @@
 package commands.hall;
 
+import controllers.HallController;
 import interfaces.ICommand;
-import interfaces.IHallRepository;
+import interfaces.IHallService;
 import interfaces.IMenu;
 import models.Halls;
 
 import java.util.List;
 
 public class ListHallsCommand implements ICommand {
-    private final IHallRepository hallRepository;
+    private final HallController hallController;
 
-    public ListHallsCommand(IHallRepository hallRepository) {
-        this.hallRepository = hallRepository;
+    public ListHallsCommand(HallController hallController) {
+        this.hallController = hallController;
     }
 
     @Override
     public IMenu execute() {
-        List<Halls> halls = hallRepository.getAllHalls();
-
         System.out.println("\n=== Halls ===");
 
-        if (halls.isEmpty()) {
-            System.out.println("No halls found.");
-
-            return null;
-        }
-        for (Halls h : halls) {
-            System.out.printf("ID: %d | Name: %s%n", h.Id, h.Name);
-        }
+        hallController.showAllHalls();
 
         return null;
     }

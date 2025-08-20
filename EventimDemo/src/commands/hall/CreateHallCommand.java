@@ -1,19 +1,20 @@
 package commands.hall;
 
+import controllers.HallController;
 import interfaces.ICommand;
-import interfaces.IHallRepository;
+import interfaces.IHallService;
 import interfaces.IMenu;
-import repositories.HallRepository;
+import menus.HallMenu;
 
 import java.util.Scanner;
 
 public class CreateHallCommand implements ICommand {
     private final Scanner scanner;
-    private final IHallRepository hallRepository;
+    private final HallController hallController;
 
-    public CreateHallCommand(Scanner scanner, IHallRepository hallRepository) {
+    public CreateHallCommand(Scanner scanner, HallController hallController) {
         this.scanner = scanner;
-        this.hallRepository = hallRepository;
+        this.hallController = hallController;
     }
 
     @Override
@@ -33,7 +34,8 @@ public class CreateHallCommand implements ICommand {
             seatsPerRow[i] = Integer.parseInt(scanner.nextLine());
         }
 
-        hallRepository.importHallWithSeats(name, seatsPerRow);
+        hallController.addHallWithSeats(name, seatsPerRow);
+
         System.out.println("Hall created.");
 
         return null;

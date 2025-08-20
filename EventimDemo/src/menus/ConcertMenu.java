@@ -4,32 +4,39 @@ import commands.concert.CreateConcertCommand;
 import commands.concert.DeleteConcertCommand;
 import commands.concert.ListConcertsCommand;
 import commands.concert.UpdateConcertCommand;
+import controllers.ConcertController;
+import controllers.HallController;
+import controllers.OrderController;
+import controllers.UserController;
 import interfaces.*;
+import models.Concerts;
+import org.postgresql.replication.fluent.logical.ChainedLogicalCreateSlotBuilder;
 import singletons.Helper;
 
+import java.util.FormatterClosedException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 public class ConcertMenu implements IMenu {
     private final Map<Integer, ICommand> commands = new HashMap<>();
-    private final IUserRepository userRepository;
-    private final IOrderRepository orderRepository;
-    private final IConcertRepository concertRepository;
+    private final UserController userController;
+    private final OrderController orderController;
+    private final ConcertController concertController;
     private final Scanner scanner;
-    private final IHallRepository hallRepository;
+    private final HallController hallController;
 
-    public ConcertMenu(Scanner scanner, IConcertRepository concertRepository, IOrderRepository orderRepository, IUserRepository userRepository, IHallRepository hallRepository) {
+    public ConcertMenu(Scanner scanner, ConcertController concertController, OrderController orderController, UserController userController, HallController hallController) {
         this.scanner = scanner;
-        this.concertRepository = concertRepository;
-        this.orderRepository = orderRepository;
-        this.userRepository = userRepository;
-        this.hallRepository = hallRepository;
+        this.concertController = concertController;
+        this.orderController = orderController;
+        this.userController = userController;
+        this.hallController = hallController;
 
-        commands.put(1, new ListConcertsCommand(concertRepository));
-        commands.put(2, new CreateConcertCommand(scanner, concertRepository, hallRepository));
-        commands.put(3, new UpdateConcertCommand(scanner, concertRepository, hallRepository));
-        commands.put(4, new DeleteConcertCommand(scanner, concertRepository));
+        commands.put(1, new ListConcertsCommand(concertController));
+        commands.put(2, new CreateConcertCommand(scanner, concertController, hallController));
+        commands.put(3, new UpdateConcertCommand(scanner, concertController, hallController));
+        commands.put(4, new DeleteConcertCommand(scanner, concertController));
     }
     @Override
     public void start() {
@@ -41,6 +48,7 @@ public class ConcertMenu implements IMenu {
             System.out.println("4. Delete concert");
             System.out.println("5. Back");
             System.out.print("Choose an option: ");
+
             int choice = Integer.parseInt(scanner.nextLine());
 
             if(choice == 5){

@@ -3,6 +3,10 @@ package menus;
 import commands.concert.ManageConcertsCommand;
 import commands.concert.ViewConcertsCommand;
 import commands.hall.ManageHallCommand;
+import controllers.ConcertController;
+import controllers.HallController;
+import controllers.OrderController;
+import controllers.UserController;
 import interfaces.*;
 import singletons.Helper;
 
@@ -14,12 +18,12 @@ public class AdminMenu implements IMenu {
     private final Map<Integer, ICommand> commands = new HashMap<>();
     private final Scanner scanner;
 
-    public AdminMenu(Scanner scanner, IConcertRepository concertRepository, IOrderRepository orderRepository, IUserRepository userRepository, IHallRepository hallRepository) {
+    public AdminMenu(Scanner scanner, ConcertController concertController, OrderController orderController, UserController userController, HallController hallController) {
         this.scanner = scanner;
 
-        commands.put(1, new ViewConcertsCommand(concertRepository));
-        commands.put(2, new ManageConcertsCommand(scanner, concertRepository, orderRepository, userRepository, hallRepository));
-        commands.put(3, new ManageHallCommand(scanner, hallRepository));
+        commands.put(1, new ViewConcertsCommand(concertController));
+        commands.put(2, new ManageConcertsCommand(scanner, concertController, orderController, userController, hallController));
+        commands.put(3, new ManageHallCommand(scanner, hallController));
     }
 
 

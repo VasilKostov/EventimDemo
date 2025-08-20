@@ -1,23 +1,22 @@
 package commands;
 
+import controllers.*;
 import interfaces.*;
 import menus.ClientMenu;
 
 import java.util.Scanner;
 
 public class RegisterCommand implements ICommand {
-    private final IUserRepository userRepository;
-    private final IOrderRepository orderRepository;
-    private final IConcertRepository concertRepository;
+    private final UserController userController;
+    private final OrderController orderController;
+    private final ConcertController concertController;
     private final Scanner scanner;
-    private final IHallRepository hallRepository;
 
-    public RegisterCommand(Scanner scanner, IConcertRepository concertRepository, IOrderRepository orderRepository, IUserRepository userRepository, IHallRepository hallRepository) {
+    public RegisterCommand(Scanner scanner, ConcertController concertController, OrderController orderController, UserController userController) {
         this.scanner = scanner;
-        this.userRepository = userRepository;
-        this.orderRepository = orderRepository;
-        this.concertRepository = concertRepository;
-        this.hallRepository = hallRepository;
+        this.userController = userController;
+        this.orderController = orderController;
+        this.concertController = concertController;
     }
 
     @Override
@@ -29,13 +28,9 @@ public class RegisterCommand implements ICommand {
         String password = scanner.nextLine();
 
         try {
-            boolean res = userRepository.createUser(username, password);
-            if (res) {
-                System.out.println("User registered as a client successfully!");
-
-                return new ClientMenu(scanner, concertRepository, orderRepository, userRepository);
-            } else {
-                System.out.println("User registration failed.");
+            boolean success = userController.createUser(username, password);
+            if(success){
+                return new ClientMenu(scanner, concertController, orderController, userController);
             }
         } catch (Exception e) {
             System.out.println("Failed to register user: " + e.getMessage());

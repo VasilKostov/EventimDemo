@@ -1,5 +1,6 @@
 package commands.hall;
 
+import controllers.HallController;
 import interfaces.*;
 import menus.HallMenu;
 
@@ -7,15 +8,15 @@ import java.util.Scanner;
 
 public class ManageHallCommand implements ICommand {
     private final Scanner scanner;
-    private final IHallRepository hallRepository;
+    private final HallController hallController;
 
-    public ManageHallCommand(Scanner scanner, IHallRepository hallRepository) {
+    public ManageHallCommand(Scanner scanner, HallController hallController) {
         this.scanner = scanner;
-        this.hallRepository = hallRepository;
+        this.hallController = hallController;
     }
 
     @Override
     public IMenu execute() {
-        return new HallMenu(scanner, hallRepository);
+        return new HallMenu(scanner, hallController);
     }
 }

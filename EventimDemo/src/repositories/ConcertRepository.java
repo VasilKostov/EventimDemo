@@ -1,132 +1,113 @@
 package repositories;
 
-import exceptions.RepositoryException;
-import interfaces.IConcertRepository;
-import interfaces.IHallRepository;
-import models.Concerts;
 import db.DatabaseConnection;
-import models.Halls;
-import models.dtos.ConcertDTO;
+import exceptions.RepositoryException;
+import models.Concerts;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConcertRepository implements IConcertRepository {
+public class ConcertRepository {
+    private static final String SELECT_ALL_CONCERTS_QUERY = "SELECT * FROM Concerts";
+    private static final String SELECT_CONCERT_BY_ID_QUERY = "SELECT * FROM Concerts WHERE Id = ?";
+    private static final String INSERT_CONCERT_QUERY = "INSERT INTO Concerts (Name, StartingDate, EndingDate, HallId) VALUES (?, ?, ?, ?)";
+    private static final String UPDATE_CONCERT_QUERY = "UPDATE Concerts SET Name = ?, StartingDate = ?, EndingDate = ?, HallId = ? WHERE Id = ?";
+    private static final String DELETE_CONCERT_QUERY = "DELETE FROM Concerts WHERE Id = ?";
 
-    private IHallRepository hallService = new HallRepository();
+    private static final String SELECT_ALL_CONCERTS_EXCEPTION = "Failed to get all concerts";
+    private static final String SELECT_CONCERT_BY_ID_EXCEPTION = "Failed to get concert by id";
+    private static final String INSERT_CONCERT_EXCEPTION = "Failed to create concert";
+    private static final String UPDATE_CONCERT_EXCEPTION = "Failed to update concert";
+    private static final String DELETE_CONCERT_EXCEPTION = "Failed to delete concert";
 
-    @Override
-    public List<ConcertDTO> getAllConcerts() {
-        List<ConcertDTO> result = new ArrayList<>();
-        String sql = "SELECT * FROM concerts";
-
+    public List<Concerts> getAllConcerts() {
+        List<Concerts> concerts = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement ps = conn.prepareStatement(SELECT_ALL_CONCERTS_QUERY);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                int hallId = rs.getInt("hallId");
-                Halls hall = hallService.getHallById(hallId);
-
-                ConcertDTO dto = new ConcertDTO(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getDate("startingDate"),
-                        rs.getDate("endingDate"),
-                        hall != null ? hall.Name : "Unknown",
-                        hall != null ? hall.Id : -1
-                );
-                result.add(dto);
+                concerts.add(
+                        new Concerts(rs.getInt("Id"),
+                                rs.getString("Name"),
+                                rs.getDate("StartingDate"),
+                                rs.getDate("EndingDate"),
+                                rs.getInt("HallId")));
             }
-        } catch (SQLException e) {
-            throw new RepositoryException("Failed show all concerts", e);
-        }
 
-        return result;
+        } catch (SQLException e) {
+            throw new RepositoryException(SELECT_ALL_CONCERTS_EXCEPTION, e);
+        }
+        return concerts;
     }
 
-    @Override
-    public ConcertDTO getConcertById(int id) {
-        String sql = "SELECT * FROM concerts WHERE id = ?";
-        ConcertDTO concert = null;
-
+    public Concerts getConcertById(int id) {
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
+             PreparedStatement ps = conn.prepareStatement(SELECT_CONCERT_BY_ID_QUERY)) {
 
-            if (rs.next()) {
-                int hallId = rs.getInt("hallId");
-                Halls hall = hallService.getHallById(hallId);
-
-                concert = new ConcertDTO(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getDate("startingDate"),
-                        rs.getDate("endingDate"),
-                        hall != null ? hall.Name : "Unknown",
-                        hall != null ? hall.Id : -1
-                );
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Concerts(rs.getInt("Id"),
+                            rs.getString("Name"),
+                            rs.getDate("StartingDate"),
+                            rs.getDate("EndingDate"),
+                            rs.getInt("HallId"));
+                }
             }
-            rs.close();
+
         } catch (SQLException e) {
-            throw new RepositoryException("Failed to get concert by id", e);
+            throw new RepositoryException(SELECT_CONCERT_BY_ID_EXCEPTION + ": " + id, e);
         }
-        return concert;
+        return null;
     }
 
-    @Override
-    public boolean createConcert(Concerts concert) {
-        String sql = "INSERT INTO concerts (name, startingDate, endingDate, hallId) VALUES (?, ?, ?, ?)";
-
+    public boolean insertConcert(Concerts concert) {
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, concert.Name);
-            stmt.setDate(2, concert.StartingDate);
-            stmt.setDate(3, concert.EndingDate);
-            stmt.setInt(4, concert.HallId);
+             PreparedStatement ps = conn.prepareStatement(INSERT_CONCERT_QUERY)) {
 
-            int rows = stmt.executeUpdate();
-            return rows > 0;
+            ps.setString(1, concert.Name);
+            ps.setDate(2, concert.StartingDate);
+            ps.setDate(3, concert.EndingDate);
+            ps.setInt(4, concert.HallId);
+
+            return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            throw new RepositoryException("Failed to create a concert: " + concert.Name, e);
+            throw new RepositoryException(INSERT_CONCERT_EXCEPTION + ": " + concert.Name, e);
         }
     }
 
-    @Override
     public boolean updateConcert(Concerts concert) {
-        String sql = "UPDATE concerts SET name = ?, startingDate = ?, endingDate = ?, hallId = ? WHERE id = ?";
-
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, concert.Name);
-            stmt.setDate(2, concert.StartingDate);
-            stmt.setDate(3, concert.EndingDate);
-            stmt.setInt(4, concert.HallId);
-            stmt.setInt(5, concert.Id);
+             PreparedStatement ps = conn.prepareStatement(UPDATE_CONCERT_QUERY)) {
 
-            int rows = stmt.executeUpdate();
-            return rows > 0;
+            ps.setString(1, concert.Name);
+            ps.setDate(2, concert.StartingDate);
+            ps.setDate(3, concert.EndingDate);
+            ps.setInt(4, concert.HallId);
+            ps.setInt(5, concert.Id);
+
+            return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            throw new RepositoryException("Failed to update concert: " + concert.Name, e);
+            throw new RepositoryException(UPDATE_CONCERT_EXCEPTION + ": " + concert.Name, e);
         }
     }
 
-    @Override
     public boolean deleteConcert(int id) {
-        String sql = "DELETE FROM concerts WHERE id = ?";
-
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            int rows = stmt.executeUpdate();
-            return rows > 0;
+             PreparedStatement ps = conn.prepareStatement(DELETE_CONCERT_QUERY)) {
+
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            throw new RepositoryException("Failed to delete concert", e);
+            throw new RepositoryException(DELETE_CONCERT_EXCEPTION + ": " + id, e);
         }
     }
 }

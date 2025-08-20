@@ -1,27 +1,25 @@
 package commands.concert;
 
+import controllers.ConcertController;
+import controllers.HallController;
 import interfaces.ICommand;
-import interfaces.IConcertRepository;
-import interfaces.IHallRepository;
 import interfaces.IMenu;
 import models.Concerts;
 import models.dtos.ConcertDTO;
-import models.dtos.HallDTO;
 import singletons.Helper;
 
 import java.sql.Date;
-import java.util.List;
 import java.util.Scanner;
 
 public class UpdateConcertCommand implements ICommand {
     private final Scanner scanner;
-    private final IConcertRepository concertRepository;
-    private final IHallRepository hallRepository;
+    private final ConcertController concertController;
+    private final HallController hallController;
 
-    public UpdateConcertCommand(Scanner scanner, IConcertRepository concertRepository, IHallRepository hallRepository) {
+    public UpdateConcertCommand(Scanner scanner, ConcertController concertController, HallController hallController) {
         this.scanner = scanner;
-        this.concertRepository = concertRepository;
-        this.hallRepository = hallRepository;
+        this.concertController = concertController;
+        this.hallController = hallController;
     }
 
     @Override
@@ -29,55 +27,54 @@ public class UpdateConcertCommand implements ICommand {
         System.out.print("Enter Concert ID to update: ");
 
         int id = Integer.parseInt(scanner.nextLine());
-        ConcertDTO existing = concertRepository.getConcertById(id);
+        ConcertDTO existing = concertController.getConcertById(id);
         if (existing == null) {
             System.out.println("Concert not found.");
 
             return null;
         }
 
-        System.out.print("Name (" + existing.Name + "): ");
-
+        System.out.print("Name (" + existing.getName() + "): ");
         String name = scanner.nextLine();
+
         if (!name.isBlank()) {
-            existing.Name = name;
+            existing.setName(name);
         }
 
-        System.out.print("Starting date (" + existing.StartingDate + ") yyyy-mm-dd: ");
+        System.out.print("Starting date (" + existing.getStartingDate() + ") yyyy-mm-dd: ");
 
         String startDateStr = scanner.nextLine();
-        Date startDate = existing.StartingDate;
+        Date startDate = existing.getStartingDate();
 
         if (!startDateStr.isBlank()){
             startDate = Date.valueOf(startDateStr);
         }
 
-        System.out.print("Ending date (" + existing.EndingDate + ") yyyy-mm-dd: ");
+        System.out.print("Ending date (" + existing.getEndingDate() + ") yyyy-mm-dd: ");
         String endDateStr = scanner.nextLine();
-        Date endDate = existing.EndingDate;
+        Date endDate = existing.getEndingDate();
 
         if (!endDateStr.isBlank()){
             endDate = Date.valueOf(endDateStr);
         }
 
-        System.out.println("Current hall: " + existing.HallName);
+        System.out.println("Current hall: " + existing.getHallName());
         System.out.print("Change hall? (yes/no): ");
         String changeHall = scanner.nextLine();
 
         if (changeHall.equalsIgnoreCase("yes")) {
-            int hallId = Helper.selectHallByNameAndDateRange(startDate, endDate, scanner, concertRepository, hallRepository);
+            int hallId = hallController.selectHallByNameAndDateRange(startDate, endDate);
             if (hallId != -1) {
-                existing.HallId = hallId;
+                existing.setHallId(hallId);
             } else {
                 System.out.println("Hall not changed.");
             }
         }
 
-        existing.StartingDate = startDate;
-        existing.EndingDate = endDate;
+        existing.setStartingDate(startDate);
+        existing.setEndingDate(endDate);
 
-        boolean updated = concertRepository.updateConcert(new Concerts(existing.Id, existing.Name, existing.StartingDate, existing.EndingDate, existing.HallId));
-        System.out.println(updated ? "Concert updated." : "Failed to update concert.");
+        concertController.editConcert(new Concerts(existing.getId(), existing.getName(), existing.getStartingDate(), existing.getEndingDate(), existing.getHallId()));
 
         return null;
     }

@@ -1,18 +1,19 @@
 package commands.concert;
 
+import controllers.ConcertController;
 import interfaces.ICommand;
-import interfaces.IConcertRepository;
+import interfaces.IConcertService;
 import interfaces.IMenu;
 
 import java.util.Scanner;
 
 public class DeleteConcertCommand implements ICommand {
     private final Scanner scanner;
-    private final IConcertRepository concertRepository;
+    private final ConcertController concertController;
 
-    public DeleteConcertCommand(Scanner scanner, IConcertRepository concertRepository) {
+    public DeleteConcertCommand(Scanner scanner, ConcertController concertController) {
         this.scanner = scanner;
-        this.concertRepository = concertRepository;
+        this.concertController = concertController;
     }
 
     @Override
@@ -20,9 +21,8 @@ public class DeleteConcertCommand implements ICommand {
         System.out.print("Enter Concert ID to delete: ");
 
         int id = Integer.parseInt(scanner.nextLine());
-        boolean deleted = concertRepository.deleteConcert(id);
 
-        System.out.println(deleted ? "Concert deleted." : "Failed to delete concert.");
+        concertController.removeConcert(id);
 
         return null;
     }

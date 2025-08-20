@@ -1,7 +1,10 @@
 package menus;
 
-import commands.ReservationCommand;
+import commands.concert.ReservationCommand;
 import commands.concert.ViewConcertsCommand;
+import controllers.ConcertController;
+import controllers.OrderController;
+import controllers.UserController;
 import interfaces.*;
 import singletons.Helper;
 
@@ -13,11 +16,11 @@ public class ClientMenu implements IMenu {
     private final Map<Integer, ICommand> commands = new HashMap<>();
     private final Scanner scanner;
 
-    public ClientMenu(Scanner scanner, IConcertRepository concertRepository, IOrderRepository orderRepository, IUserRepository userRepository) {
+    public ClientMenu(Scanner scanner, ConcertController concertController, OrderController orderController, UserController userController) {
         this.scanner = scanner;
 
-        commands.put(1, new ViewConcertsCommand(concertRepository));
-        commands.put(2, new ReservationCommand(scanner, concertRepository,orderRepository, userRepository));
+        commands.put(1, new ViewConcertsCommand(concertController));
+        commands.put(2, new ReservationCommand(scanner, concertController,orderController, userController));
     }
 
     @Override

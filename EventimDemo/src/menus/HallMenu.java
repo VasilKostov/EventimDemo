@@ -2,6 +2,7 @@ package menus;
 
 import commands.hall.CreateHallCommand;
 import commands.hall.ListHallsCommand;
+import controllers.HallController;
 import interfaces.*;
 import singletons.Helper;
 
@@ -12,14 +13,14 @@ import java.util.Scanner;
 public class HallMenu implements IMenu {
     private final Map<Integer, ICommand> commands = new HashMap<>();
     private final Scanner scanner;
-    private final IHallRepository hallRepository;
+    private final HallController hallController;
 
-    public HallMenu(Scanner scanner, IHallRepository hallRepository) {
+    public HallMenu(Scanner scanner, HallController hallController) {
         this.scanner = scanner;
-        this.hallRepository = hallRepository;
+        this.hallController = hallController;
 
-        commands.put(1, new ListHallsCommand(hallRepository));
-        commands.put(2, new CreateHallCommand(scanner, hallRepository));
+        commands.put(1, new ListHallsCommand(hallController));
+        commands.put(2, new CreateHallCommand(scanner, hallController));
     }
     @Override
     public void start() {

@@ -1,20 +1,36 @@
 package models.dtos;
 
 public class SeatDTO {
-    public int Id;
-    public int Row;
-    public int Number;
-    public int HallId;
+    private final int id;
+    private final int row;
+    private final int number;
+    private final int hallId;
 
     public SeatDTO(int id, int row, int number, int hallId) {
-        this.Id = id;
-        this.Row = row;
-        this.Number = number;
-        this.HallId = hallId;
+        this.id = id;
+        this.row = row;
+        this.number = number;
+        this.hallId = hallId;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public int getHallId() {
+        return hallId;
     }
 
     @Override
     public String toString() {
-        return "Seat " + Number + " in row " + Row;
+        return "Seat " + number + " in row " + row;
     }
 }

@@ -15,7 +15,7 @@ public class DatabaseConnection {
     static {
         try (InputStream input = DatabaseConnection.class
                 .getClassLoader()
-                .getResourceAsStream("db/.properties")) {
+                .getResourceAsStream("resources/.properties")) {
 
             if (input == null) {
                 throw new RuntimeException("Database configuration file not found.");

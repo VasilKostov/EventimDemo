@@ -1,26 +1,27 @@
 package commands.concert;
 
+import controllers.ConcertController;
+import controllers.HallController;
 import interfaces.ICommand;
-import interfaces.IConcertRepository;
-import interfaces.IHallRepository;
+import interfaces.IConcertService;
+import interfaces.IHallService;
 import interfaces.IMenu;
 import models.Concerts;
-import models.dtos.HallDTO;
+import org.postgresql.replication.fluent.logical.ChainedLogicalCreateSlotBuilder;
 import singletons.Helper;
 
 import java.sql.Date;
-import java.util.List;
 import java.util.Scanner;
 
 public class CreateConcertCommand implements ICommand {
     private final Scanner scanner;
-    private final IConcertRepository concertRepository;
-    private final IHallRepository hallRepository;
+    private final ConcertController concertController;
+    private final HallController hallController;
 
-    public CreateConcertCommand(Scanner scanner, IConcertRepository concertRepository, IHallRepository hallRepository) {
+    public CreateConcertCommand(Scanner scanner, ConcertController concertController, HallController hallController) {
         this.scanner = scanner;
-        this.concertRepository = concertRepository;
-        this.hallRepository = hallRepository;
+        this.concertController = concertController;
+        this.hallController = hallController;
     }
 
     @Override
@@ -34,15 +35,14 @@ public class CreateConcertCommand implements ICommand {
 
         System.out.print("Ending date (yyyy-mm-dd): ");
         Date endDate = Date.valueOf(scanner.nextLine());
-        int hallId = Helper.selectHallByNameAndDateRange(startDate, endDate, scanner,  concertRepository, hallRepository);
+
+        int hallId = hallController.selectHallByNameAndDateRange(startDate, endDate);
         if (hallId == -1) {
             System.out.println("No hall selected. Concert creation cancelled.");
             return null;
         }
 
-        Concerts concert = new Concerts(name, startDate, endDate, hallId);
-
-        System.out.println(concertRepository.createConcert(concert) ? "Concert created." : "Failed to create concert.");
+        concertController.addConcert(new Concerts(name, startDate, endDate, hallId));
 
         return null;
     }
