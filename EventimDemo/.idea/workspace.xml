@@ -4,51 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0cf687fd-13aa-4311-95fd-677668e83887" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/controllers/ConcertController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controllers/HallController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controllers/OrderController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controllers/UserController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/ConcertService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/HallService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/OrderService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/commands/LoginCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/LoginCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/commands/RegisterCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/RegisterCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/commands/ReservationCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/concert/ReservationCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/commands/concert/CreateConcertCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/concert/CreateConcertCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/commands/concert/DeleteConcertCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/concert/DeleteConcertCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/commands/concert/ListConcertsCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/concert/ListConcertsCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/commands/concert/ManageConcertsCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/concert/ManageConcertsCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/commands/concert/UpdateConcertCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/concert/UpdateConcertCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/commands/concert/ViewConcertsCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/concert/ViewConcertsCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/commands/hall/CreateHallCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/hall/CreateHallCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/commands/hall/ListHallsCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/hall/ListHallsCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/commands/hall/ManageHallCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/commands/hall/ManageHallCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controllers/AppController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/AppController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/db/.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/resources/.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/db/DatabaseConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/db/DatabaseConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/interfaces/IConcertRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/interfaces/IConcertService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/interfaces/IHallRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/interfaces/IHallService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/interfaces/IOrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/interfaces/IOrderService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/interfaces/IUserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/interfaces/IUserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/menus/AdminMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/menus/AdminMenu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/menus/ClientMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/menus/ClientMenu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/menus/ConcertMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/menus/ConcertMenu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/menus/HallMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/menus/HallMenu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/menus/LoginMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/menus/LoginMenu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/Halls.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/Halls.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/dtos/ConcertDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/dtos/ConcertDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/dtos/HallDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/dtos/HallDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/dtos/SeatDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/dtos/SeatDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/repositories/ConcertRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/repositories/ConcertRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/repositories/HallRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/repositories/HallRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/repositories/OrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/repositories/OrderRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/repositories/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/repositories/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/singletons/Helper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/singletons/Helper.java" afterDir="false" />
-    </list>
+    <list default="true" id="0cf687fd-13aa-4311-95fd-677668e83887" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -135,7 +91,7 @@
       <workItem from="1754409671250" duration="940000" />
       <workItem from="1755093000080" duration="4957000" />
       <workItem from="1755157396392" duration="15799000" />
-      <workItem from="1755613976813" duration="14508000" />
+      <workItem from="1755613976813" duration="14811000" />
     </task>
     <servers />
   </component>
